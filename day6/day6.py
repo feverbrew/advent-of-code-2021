@@ -1,22 +1,27 @@
-
+import sys
 
 def laternfish_spawning(input_file: str, days: int) -> int:
     with open(input_file) as input:
         strlanternfish = next(input).split(',')
         lanternfish = [int(alanternfish) for alanternfish in strlanternfish]
+        fishdict = {i:0 for i in range(9)}
+        for alanternfish in lanternfish:
+            try:
+                fishdict[alanternfish] += 1
+            except:
+                fishdict[alanternfish] = 1
     
     for day in range(days):
-        baby_lanternfish = 0
-        for i in range(len(lanternfish)):
-            if lanternfish[i] == 0:
-                baby_lanternfish += 1
-                lanternfish[i] = 6
+        fish_after_day = {}
+        for i in range(len(fishdict)):
+            if i == 6:
+                fish_after_day[i] = fishdict[7] + fishdict[0]
+            elif i == 8:
+                fish_after_day[i] = fishdict[0]
             else:
-                lanternfish[i] -= 1
-        print(f'{baby_lanternfish} baby laternfish were born on day {day}!')
-        lanternfish.extend([8]*baby_lanternfish)
-        # print(lanternfish)
-    return len(lanternfish)
+                fish_after_day[i] = fishdict[i+1]
+        fishdict = fish_after_day
+    return sum(fishdict.values())
 
 def recursive_laternfish_spawning(input_file: str, days: int) -> int:
     with open(input_file) as input:
@@ -35,16 +40,7 @@ def recurse_fish(lanternfish, days):
     else:
         return recurse_fish(lanternfish-1, days-1)
 
-def formula(input_file, days) -> int:
-    # given an input of fish and days, can calculate the fish population using a math formula
-    # Maybe the best way of doing this is just figure out how many fish spawn from a certain number after 80 days. If we can do that and just skip 80 days at a time, it gets faster (note that actual number must be a factor of 256)
-    with open(input_file) as input:
-        strlanternfish = next(input).split(',')
-        lanternfish = [int(alanternfish) for alanternfish in strlanternfish]
-    total_fish = len(lanternfish) * (1.09289252) ** days
-    return total_fish
 
 if __name__ == '__main__':
-    print(laternfish_spawning('input.txt', 40))
-    print(recursive_laternfish_spawning('input.txt', 40))
-    print(formula('input.txt', 40))
+    print(laternfish_spawning('input.txt', int(sys.argv[1])))
+    print(recursive_laternfish_spawning('input.txt', int(sys.argv[1])))
